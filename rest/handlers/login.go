@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/turjoc120/ecom/config"
 	"github.com/turjoc120/ecom/database"
 	"github.com/turjoc120/ecom/util"
 )
@@ -27,5 +28,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	util.SendData(w, usr, http.StatusCreated)
+	cnf := config.GetConfig()
+	accessToken, err := util.CreateJwt(cnf.JwtSecretKey, util.Payload{Sub: usr.ID,
+		FirstName:   usr.FirstName,
+		LastName:    usr.LastName,
+		Email:       usr.Email,
+		IsShopOwner: true})
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+	}
+
+	util.SendData(w, accessToken, http.StatusCreated)
 }

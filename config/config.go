@@ -11,9 +11,10 @@ import (
 var configurations Config
 
 type Config struct {
-	Version     string
-	ServiceName string
-	HttpPort    int
+	Version      string
+	ServiceName  string
+	HttpPort     int
+	JwtSecretKey string
 }
 
 func LoadConfig() {
@@ -26,6 +27,7 @@ func LoadConfig() {
 	version := os.Getenv("VERSION")
 	serviceName := os.Getenv("SERVICE_NAME")
 	httpPort := os.Getenv("PORT")
+	jwtSecretKey := os.Getenv("JWT_SECRET_KEY")
 	port, err := strconv.ParseInt(httpPort, 10, 64)
 
 	if err != nil {
@@ -34,9 +36,10 @@ func LoadConfig() {
 	}
 
 	configurations = Config{
-		Version:     version,
-		ServiceName: serviceName,
-		HttpPort:    int(port),
+		Version:      version,
+		ServiceName:  serviceName,
+		HttpPort:     int(port),
+		JwtSecretKey: jwtSecretKey,
 	}
 
 }
