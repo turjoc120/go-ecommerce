@@ -13,7 +13,7 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 
 	mux.Handle("POST /products",
 		middleware.Use(http.HandlerFunc(h.CreateProduct),
-			middleware.AuthenticateJWT,
+			h.middlewares.AuthenticateJWT,
 		))
 
 	mux.Handle("GET /products/{id}",
@@ -21,7 +21,7 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 
 	mux.Handle("DELETE /products/{id}",
 		middleware.Use(http.HandlerFunc(h.DeleteProduct),
-			middleware.AuthenticateJWT,
+			h.middlewares.AuthenticateJWT,
 		))
 
 }

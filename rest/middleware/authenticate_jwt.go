@@ -6,11 +6,9 @@ import (
 	"encoding/base64"
 	"net/http"
 	"strings"
-
-	"github.com/turjoc120/ecom/config"
 )
 
-func AuthenticateJWT(next http.Handler) http.Handler {
+func (m *Middlewares) AuthenticateJWT(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		header := r.Header.Get("Authorization")
 		if header == "" {
@@ -38,7 +36,7 @@ func AuthenticateJWT(next http.Handler) http.Handler {
 		message := jwtHeader + "." + jwtPayload
 
 		byteArrMessage := []byte(message)
-		byteArrSecret := []byte(config.GetConfig().JwtSecretKey)
+		byteArrSecret := []byte(m.cnf.JwtSecretKey)
 
 		h := hmac.New(sha256.New, byteArrSecret)
 		h.Write(byteArrMessage)
