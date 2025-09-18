@@ -12,18 +12,20 @@ import (
 )
 
 type Server struct {
+	cnf            config.Config
 	productHandler *product.Handler
 	userHandler    *user.Handler
 }
 
-func NewServer(productHandler *product.Handler, userHandler *user.Handler) *Server {
+func NewServer(cnf config.Config, productHandler *product.Handler, userHandler *user.Handler) *Server {
 	return &Server{
+		cnf:            cnf,
 		productHandler: productHandler,
 		userHandler:    userHandler,
 	}
 }
 
-func (server *Server) Start(cnf config.Config) {
+func (server *Server) Start() {
 	mux := http.NewServeMux()
 
 	wrappedMux := middleware.Use(mux, middleware.CorsWithPreflight, middleware.Logger)
@@ -33,7 +35,7 @@ func (server *Server) Start(cnf config.Config) {
 
 	fmt.Println("Server started on :8080")
 
-	err := http.ListenAndServe(":"+strconv.Itoa(cnf.HttpPort), wrappedMux)
+	err := http.ListenAndServe(":"+strconv.Itoa(server.cnf.HttpPort), wrappedMux)
 	if err != nil {
 		fmt.Println("Error starting server:", err)
 		return
