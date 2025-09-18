@@ -15,13 +15,17 @@ func initRoutes(mux *http.ServeMux) {
 		middleware.Use(http.HandlerFunc(handlers.GetProducts)))
 
 	mux.Handle("POST /products",
-		middleware.Use(http.HandlerFunc(handlers.CreateProduct)))
+		middleware.Use(http.HandlerFunc(handlers.CreateProduct),
+			middleware.AuthenticateJWT,
+		))
 
 	mux.Handle("GET /products/{id}",
 		middleware.Use(http.HandlerFunc(handlers.GetProductByID)))
 
 	mux.Handle("DELETE /products/{id}",
-		middleware.Use(http.HandlerFunc(handlers.DeleteProduct)))
+		middleware.Use(http.HandlerFunc(handlers.DeleteProduct),
+			middleware.AuthenticateJWT,
+		))
 
 	mux.Handle("POST /users",
 		middleware.Use(http.HandlerFunc(handlers.CreateUser)))
