@@ -1,4 +1,4 @@
-package handlers
+package product
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"github.com/turjoc120/ecom/util"
 )
 
-func CreateProduct(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	var newProduct database.Product
 	err := json.NewDecoder(r.Body).Decode(&newProduct)

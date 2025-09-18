@@ -6,15 +6,30 @@ import (
 	"strconv"
 
 	"github.com/turjoc120/ecom/config"
+	"github.com/turjoc120/ecom/rest/handlers/product"
+	"github.com/turjoc120/ecom/rest/handlers/user"
 	"github.com/turjoc120/ecom/rest/middleware"
 )
 
-func Start(cnf config.Config) {
+type Server struct {
+	productHandler *product.Handler
+	userHandler    *user.Handler
+}
+
+func NewServer(productHandler *product.Handler, userHandler *user.Handler) *Server {
+	return &Server{
+		productHandler: productHandler,
+		userHandler:    userHandler,
+	}
+}
+
+func (server *Server) Start(cnf config.Config) {
 	mux := http.NewServeMux()
 
 	wrappedMux := middleware.Use(mux, middleware.CorsWithPreflight, middleware.Logger)
 
-	initRoutes(mux)
+	server.productHandler.RegisterRoutes(mux)
+	server.userHandler.RegisterRoutes(mux)
 
 	fmt.Println("Server started on :8080")
 

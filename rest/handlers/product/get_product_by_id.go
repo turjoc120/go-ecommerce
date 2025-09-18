@@ -1,4 +1,4 @@
-package handlers
+package product
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 	"github.com/turjoc120/ecom/util"
 )
 
-func GetProductByID(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetProductByID(w http.ResponseWriter, r *http.Request) {
 	productId, err := strconv.Atoi(r.PathValue("id"))
 
 	if err != nil {
