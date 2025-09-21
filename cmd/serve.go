@@ -22,5 +22,5 @@ func Serve() {
 
 	server := rest.NewServer(cnf, productHandler, userHandler)
 	server.Start()
-
+	//
 }
