@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/turjoc120/ecom/database"
 	"github.com/turjoc120/ecom/util"
 )
 
@@ -15,12 +14,12 @@ func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid product ID", http.StatusBadRequest)
 		return
 	}
-	product := database.Get(productId)
-	if product == nil {
-		http.Error(w, "Product not found", http.StatusNotFound)
+
+	err = h.productRepo.Delete(productId)
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
-	database.Delete(productId)
-	util.SendData(w, "Product deleted successfully", 201)
+	util.SendData(w, "Product deleted successfully", http.StatusOK)
 
 }

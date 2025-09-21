@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/turjoc120/ecom/database"
 	"github.com/turjoc120/ecom/util"
 )
 
@@ -16,9 +15,9 @@ func (h *Handler) GetProductByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product := database.Get(productId)
-	if product == nil {
-		util.SendData(w, "product not found", 404)
+	product, err := h.productRepo.Get(productId)
+	if err != nil {
+		util.SendData(w, "product not found", http.StatusInternalServerError)
 	}
-	util.SendData(w, product, 200)
+	util.SendData(w, product, http.StatusOK)
 }

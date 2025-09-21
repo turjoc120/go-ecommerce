@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/turjoc120/ecom/config"
-	"github.com/turjoc120/ecom/database"
 	"github.com/turjoc120/ecom/util"
 )
 
@@ -22,14 +20,13 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usr := database.Find(reqLogin.Email, reqLogin.Password)
-	if usr == nil {
+	usr, err := h.userRepo.Get(reqLogin.Email, reqLogin.Password)
+	if err != nil {
 		http.Error(w, "user not found", http.StatusBadRequest)
 		return
 	}
 
-	cnf := config.GetConfig()
-	accessToken, err := util.CreateJwt(cnf.JwtSecretKey, util.Payload{Sub: usr.ID,
+	accessToken, err := util.CreateJwt(h.cnf.JwtSecretKey, util.Payload{Sub: usr.ID,
 		FirstName:   usr.FirstName,
 		LastName:    usr.LastName,
 		Email:       usr.Email,
