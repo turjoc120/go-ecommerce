@@ -20,7 +20,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usr, err := h.userRepo.Get(reqLogin.Email, reqLogin.Password)
+	usr, err := h.userRepo.Find(reqLogin.Email, reqLogin.Password)
 	if err != nil {
 		http.Error(w, "user not found", http.StatusBadRequest)
 		return

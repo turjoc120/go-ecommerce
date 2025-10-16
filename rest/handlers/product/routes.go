@@ -24,4 +24,9 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 			h.middlewares.AuthenticateJWT,
 		))
 
+	mux.Handle("PATCH /products/{id}",
+		middleware.Use(http.HandlerFunc(h.UpdateProduct),
+			h.middlewares.AuthenticateJWT,
+		))
+
 }

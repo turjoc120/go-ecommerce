@@ -1,0 +1,2 @@
+DELETE from USERS 
+WEHERE id = 1
