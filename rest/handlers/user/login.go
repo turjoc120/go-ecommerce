@@ -1,39 +1,39 @@
 package user
 
 import (
+	"ecoommerce/util"
+
 	"encoding/json"
 	"net/http"
-
-	"github.com/turjoc120/ecom/util"
 )
 
-type ReqLogin struct {
+type reqLogin struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
-	var reqLogin ReqLogin
-	err := json.NewDecoder(r.Body).Decode(&reqLogin)
+	var reqUser reqLogin
+	err := json.NewDecoder(r.Body).Decode(&reqUser)
 	if err != nil {
-		http.Error(w, "give me a valid data", http.StatusBadRequest)
+		http.Error(w, "Invalid input", http.StatusBadRequest)
 		return
 	}
 
-	usr, err := h.userRepo.Find(reqLogin.Email, reqLogin.Password)
+	user, err := h.userRepo.Get(reqUser.Email, reqUser.Password)
 	if err != nil {
-		http.Error(w, "user not found", http.StatusBadRequest)
+		util.SendData(w, 404, "user not found")
 		return
 	}
 
-	accessToken, err := util.CreateJwt(h.cnf.JwtSecretKey, util.Payload{Sub: usr.ID,
-		FirstName:   usr.FirstName,
-		LastName:    usr.LastName,
-		Email:       usr.Email,
-		IsShopOwner: true})
+	accessToken, err := util.CreateJwt(h.cnf.JwtSecret, util.Payload{
+		Sub:   user.Username,
+		Name:  user.Username,
+		Admin: user.IsAdmin,
+	})
 	if err != nil {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
 	}
-
-	util.SendData(w, accessToken, http.StatusCreated)
+	util.SendData(w, 200, accessToken)
 }

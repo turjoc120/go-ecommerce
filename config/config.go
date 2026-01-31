@@ -8,8 +8,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var configurations *Config
-
 type DbConfig struct {
 	HOST     string
 	PORT     int
@@ -20,65 +18,43 @@ type DbConfig struct {
 }
 
 type Config struct {
-	Version      string
-	ServiceName  string
-	HttpPort     int
-	JwtSecretKey string
-	DB           *DbConfig
+	Version     string
+	ServiceName string
+	HttpPort    int
+	JwtSecret   string
+	DB          *DbConfig
 }
 
-func LoadConfig() {
+var configuration *Config
+
+func loadConfig() {
 	err := godotenv.Load()
 	if err != nil {
-		fmt.Println("Error loading .env file", err)
+		fmt.Println("Error loading .env file")
 		os.Exit(1)
 	}
 
 	version := os.Getenv("VERSION")
 	if version == "" {
-		fmt.Println("VERSION not set in .env file")
+		fmt.Println("version is required")
 		os.Exit(1)
 	}
 
 	serviceName := os.Getenv("SERVICE_NAME")
 	if serviceName == "" {
-		fmt.Println("SERVICE_NAME not set in .env file")
+		fmt.Println("service name is required")
 		os.Exit(1)
 	}
-
-	httpPort := os.Getenv("PORT")
-	if httpPort == "" {
-		fmt.Println("PORT not set in .env file")
+	httpPortStr := os.Getenv("HTTP_PORT")
+	if httpPortStr == "" {
+		fmt.Println("http port is required")
 		os.Exit(1)
 	}
+	port, err := strconv.Atoi(httpPortStr)
 
-	jwtSecretKey := os.Getenv("JWT_SECRET_KEY")
-	if jwtSecretKey == "" {
-		fmt.Println("JWT_SECRET_KEY not set in .env file")
-		os.Exit(1)
-	}
-
-	port, err := strconv.ParseInt(httpPort, 10, 64)
-	if err != nil {
-		fmt.Println("Error parsing PORT", err)
-		os.Exit(1)
-	}
-
-	dbhost := os.Getenv("DB_HOST")
-	if dbhost == "" {
-		fmt.Println("DB_HOST not set in .env file")
-		os.Exit(1)
-	}
-
-	dbprt := os.Getenv("DB_PORT")
-	if dbprt == "" {
-		fmt.Println("DB_PORT not set in .env file")
-		os.Exit(1)
-	}
-
-	dbPort, err := strconv.ParseInt(dbprt, 10, 64)
-	if err != nil {
-		fmt.Println("Error parsing PORT", err)
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		fmt.Println("jwt secret is required")
 		os.Exit(1)
 	}
 
@@ -107,6 +83,26 @@ func LoadConfig() {
 		os.Exit(1)
 	}
 
+	//port
+	dbprt := os.Getenv("DB_PORT")
+	if dbprt == "" {
+		fmt.Println("DB_PORT not set in .env file")
+		os.Exit(1)
+	}
+
+	dbPort, err := strconv.ParseInt(dbprt, 10, 64)
+	if err != nil {
+		fmt.Println("Error parsing PORT", err)
+		os.Exit(1)
+	}
+
+	//host
+	dbhost := os.Getenv("DB_HOST")
+	if dbhost == "" {
+		fmt.Println("DB_HOST not set in .env file")
+		os.Exit(1)
+	}
+
 	dbConfig := DbConfig{
 		HOST:     dbhost,
 		PORT:     int(dbPort),
@@ -116,20 +112,19 @@ func LoadConfig() {
 		SSLMode:  enableSSLMode,
 	}
 
-	configurations = &Config{
-		Version:      version,
-		ServiceName:  serviceName,
-		HttpPort:     int(port),
-		JwtSecretKey: jwtSecretKey,
-		DB:           &dbConfig,
+	configuration = &Config{
+		Version:     version,
+		ServiceName: serviceName,
+		HttpPort:    port,
+		JwtSecret:   jwtSecret,
+		DB:          &dbConfig,
 	}
-
 }
 
 func GetConfig() *Config {
-	//makig sure config reads once
-	if configurations == nil {
-		LoadConfig()
+	if configuration == nil {
+		loadConfig()
 	}
-	return configurations
+
+	return configuration
 }

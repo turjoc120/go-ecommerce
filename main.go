@@ -1,6 +1,6 @@
 package main
 
-import "github.com/turjoc120/ecom/cmd"
+import "ecoommerce/cmd"
 
 func main() {
 	cmd.Serve()

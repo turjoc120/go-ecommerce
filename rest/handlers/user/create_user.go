@@ -1,36 +1,35 @@
 package user
 
 import (
+	"ecoommerce/repo"
+	"ecoommerce/util"
 	"encoding/json"
 	"net/http"
-
-	"github.com/turjoc120/ecom/repo"
-	"github.com/turjoc120/ecom/util"
 )
 
 type reqUser struct {
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	IsShopOwner bool   `json:"is_shop_owner"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	IsAdmin  bool   `json:"is_admin"`
 }
 
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
-
-	var reqUser reqUser
-	err := json.NewDecoder(r.Body).Decode(&reqUser)
+	var newUser reqUser
+	err := json.NewDecoder(r.Body).Decode(&newUser)
 	if err != nil {
-		http.Error(w, "give me a valid data", http.StatusBadRequest)
+		http.Error(w, "Invalid input", http.StatusBadRequest)
 		return
 	}
-	user, err := h.userRepo.Create(repo.User{
-		FirstName:   reqUser.FirstName,
-		LastName:    reqUser.LastName,
-		Email:       reqUser.Email,
-		Password:    reqUser.Password,
-		IsShopOwner: reqUser.IsShopOwner,
+	createdUser, err := h.userRepo.Create(repo.User{
+		Username: newUser.Username,
+		Email:    newUser.Email,
+		Password: newUser.Password,
+		IsAdmin:  newUser.IsAdmin,
 	})
 
-	util.SendData(w, user, http.StatusCreated)
+	if err != nil {
+		util.SendData(w, http.StatusInternalServerError, "unable to create the user")
+	}
+	util.SendData(w, 201, createdUser)
 }

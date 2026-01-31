@@ -1,18 +1,18 @@
 package user
 
 import (
-	"github.com/turjoc120/ecom/config"
-	"github.com/turjoc120/ecom/repo"
+	"ecoommerce/config"
+	"ecoommerce/repo"
 )
 
 type Handler struct {
-	userRepo repo.UserRepo
 	cnf      *config.Config
+	userRepo repo.UserRepo
 }
 
-func NewHandler(userRepo repo.UserRepo, cnf *config.Config) *Handler {
+func NewHandler(cnf *config.Config, userRepo repo.UserRepo) *Handler {
 	return &Handler{
-		userRepo: userRepo,
 		cnf:      cnf,
+		userRepo: userRepo,
 	}
 }

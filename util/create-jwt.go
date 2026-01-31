@@ -13,11 +13,9 @@ type Header struct {
 }
 
 type Payload struct {
-	Sub         int    `json:"sub"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Email       string `json:"email"`
-	IsShopOwner bool   `json:"is_shop_owner"`
+	Sub   string `json:"sub"`
+	Name  string `json:"name"`
+	Admin bool   `json:"admin"`
 }
 
 func CreateJwt(secret string, data Payload) (string, error) {
@@ -25,31 +23,29 @@ func CreateJwt(secret string, data Payload) (string, error) {
 		Alg: "HS256",
 		Typ: "JWT",
 	}
-
-	byteArrHeader, err := json.Marshal(header)
+	byeArrHeader, err := json.Marshal(header)
 	if err != nil {
 		return "", err
 	}
-	headerB64 := base64UrlEncode(byteArrHeader)
 
-	byteArrData, err := json.Marshal(data)
+	byeArrPayload, err := json.Marshal(data)
 	if err != nil {
 		return "", err
 	}
-	payloadB64 := base64UrlEncode(byteArrData)
 
+	headerB64 := base64UrlEncode(byeArrHeader)
+	payloadB64 := base64UrlEncode(byeArrPayload)
 	message := headerB64 + "." + payloadB64
 
+	byteArrSecrect := []byte(secret)
 	byteArrMessage := []byte(message)
-	byteArrSecret := []byte(secret)
 
-	h := hmac.New(sha256.New, byteArrSecret)
+	h := hmac.New(sha256.New, byteArrSecrect)
 	h.Write(byteArrMessage)
 
 	signature := h.Sum(nil)
 	signatureB64 := base64UrlEncode(signature)
-
-	jwt := headerB64 + "." + payloadB64 + "." + signatureB64
+	jwt := message + "." + signatureB64
 
 	return jwt, nil
 }

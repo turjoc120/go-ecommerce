@@ -1,32 +1,30 @@
 package product
 
 import (
+	"ecoommerce/rest/middleware"
 	"net/http"
-
-	"github.com/turjoc120/ecom/rest/middleware"
 )
 
-func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
+func (h *Handler) RegisterRoutes(mux *http.ServeMux, manager *middleware.Manager) {
+	mux.Handle("GET /products", manager.With(
+		http.HandlerFunc(h.GetProducts),
+	))
+	//
+	mux.Handle("GET /products/{id}", manager.With(
+		http.HandlerFunc(h.GetProductByID),
+	))
 
-	mux.Handle("GET /products",
-		middleware.Use(http.HandlerFunc(h.GetProducts)))
+	mux.Handle("POST /products", manager.With(
+		http.HandlerFunc(h.CreateProductHandler),
+		h.middlewares.Authenticate,
+	))
 
-	mux.Handle("POST /products",
-		middleware.Use(http.HandlerFunc(h.CreateProduct),
-			h.middlewares.AuthenticateJWT,
-		))
-
-	mux.Handle("GET /products/{id}",
-		middleware.Use(http.HandlerFunc(h.GetProductByID)))
-
-	mux.Handle("DELETE /products/{id}",
-		middleware.Use(http.HandlerFunc(h.DeleteProduct),
-			h.middlewares.AuthenticateJWT,
-		))
-
-	mux.Handle("PATCH /products/{id}",
-		middleware.Use(http.HandlerFunc(h.UpdateProduct),
-			h.middlewares.AuthenticateJWT,
-		))
-
+	mux.Handle("PUT /products/{id}", manager.With(
+		http.HandlerFunc(h.UpdateProduct),
+		h.middlewares.Authenticate,
+	))
+	mux.Handle("DELETE /products/{id}", manager.With(
+		http.HandlerFunc(h.DeleteProduct),
+		h.middlewares.Authenticate,
+	))
 }

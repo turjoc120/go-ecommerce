@@ -1,17 +1,16 @@
 package user
 
 import (
+	"ecoommerce/rest/middleware"
 	"net/http"
-
-	"github.com/turjoc120/ecom/rest/middleware"
 )
 
-func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
+func (h *Handler) RegisterRoutes(mux *http.ServeMux, manager *middleware.Manager) {
 
-	mux.Handle("POST /users",
-		middleware.Use(http.HandlerFunc(h.CreateUser)))
-
-	mux.Handle("POST /users/login",
-		middleware.Use(http.HandlerFunc(h.Login)))
-
+	mux.Handle("POST /users", manager.With(
+		http.HandlerFunc(h.CreateUser),
+	))
+	mux.Handle("POST /login", manager.With(
+		http.HandlerFunc(h.Login),
+	))
 }

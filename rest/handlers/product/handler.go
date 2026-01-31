@@ -1,8 +1,8 @@
 package product
 
 import (
-	"github.com/turjoc120/ecom/repo"
-	"github.com/turjoc120/ecom/rest/middleware"
+	"ecoommerce/repo"
+	"ecoommerce/rest/middleware"
 )
 
 type Handler struct {
@@ -10,7 +10,10 @@ type Handler struct {
 	productRepo repo.ProductRepo
 }
 
-func NewHandler(productRepo repo.ProductRepo, middlewares *middleware.Middlewares) *Handler {
+func NewHandler(
+	middlewares *middleware.Middlewares,
+	productRepo repo.ProductRepo,
+) *Handler {
 	return &Handler{
 		middlewares: middlewares,
 		productRepo: productRepo,

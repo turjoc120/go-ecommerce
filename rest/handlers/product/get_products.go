@@ -1,15 +1,14 @@
 package product
 
 import (
+	"ecoommerce/util"
 	"net/http"
-
-	"github.com/turjoc120/ecom/util"
 )
 
 func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	productList, err := h.productRepo.List()
 	if err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		util.SendData(w, 200, "no products found")
 	}
-	util.SendData(w, productList, http.StatusOK)
+	util.SendData(w, 200, productList)
 }
