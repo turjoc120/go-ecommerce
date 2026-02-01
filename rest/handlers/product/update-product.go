@@ -12,6 +12,7 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	productId, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "give me a valid product id", 400)
+		return
 	}
 
 	var req reqProduct
@@ -28,7 +29,8 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		util.SendData(w, http.StatusInternalServerError, "Product updated successfully")
+		util.SendData(w, http.StatusInternalServerError, "failed to update product")
+		return
 	}
 	util.SendData(w, 200, "Product updated successfully")
 }

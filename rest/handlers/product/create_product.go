@@ -27,6 +27,7 @@ func (h *Handler) CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
 	}
 	util.SendData(w, 200, createdProduct)
 }

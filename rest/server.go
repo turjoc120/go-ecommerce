@@ -28,7 +28,7 @@ func NewServer(cnf *config.Config,
 
 func (s *Server) Start() {
 	manager := middleware.NewManager()
-	manager.Use(middleware.CorsWithPreflight)
+	manager.Use(middleware.CorsWithPreflight, middleware.Logger)
 
 	mux := http.NewServeMux()
 	wrapedMux := manager.WrapMux(mux)

@@ -53,20 +53,16 @@ func (r *productRepo) Get(id int) (*Product, error) {
 	var product Product
 	query := `
 	SELECT 
-	id,
-	name,
-	price,
-	from products
-	where id = $1
+		id,
+		name,
+		price
+	FROM products
+	WHERE id = $1
 	`
 	err := r.db.Get(&product, query, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
 		return nil, err
 	}
-
 	return &product, nil
 }
 
@@ -88,9 +84,9 @@ func (r *productRepo) Update(p Product) (*Product, error) {
 		UPDATE products
 		SET name=$1, price=$2
 		WHERE id = $3
+		RETURNING id, name, price
 	`
-	row := r.db.QueryRow(query, p.Name, p.Price, p.ID)
-	err := row.Err()
+	err := r.db.Get(&p, query, p.Name, p.Price, p.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -101,9 +97,18 @@ func (r *productRepo) Delete(id int) error {
 	query := `
 		DELETE FROM products WHERE id = $1
 	`
-	_, err := r.db.Exec(query, id)
+
+	res, err := r.db.Exec(query, id)
 	if err != nil {
 		return err
 	}
+
+	//how many rows he deleted
+	rows, _ := res.RowsAffected()
+	if rows == 0 {
+		//if none
+		return sql.ErrNoRows
+	}
+	//no error, product delted
 	return nil
 }

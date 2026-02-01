@@ -30,6 +30,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		util.SendData(w, http.StatusInternalServerError, "unable to create the user")
+		return
 	}
 	util.SendData(w, 201, createdUser)
 }
