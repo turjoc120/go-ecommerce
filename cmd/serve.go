@@ -15,16 +15,21 @@ func Serve() {
 
 	cnf := config.GetConfig()
 
-	db, err := db.NewConnection(cnf.DB)
+	dbCon, err := db.NewConnection(cnf.DB)
+	if err != nil {
+		os.Exit(1)
+	}
+
+	err = db.MigrateDb(dbCon, "./migrations")
 	if err != nil {
 		os.Exit(1)
 	}
 
 	middlewares := middleware.NewMiddleWares(cnf)
-	productRepo := repo.NewProductRepo(db)
+	productRepo := repo.NewProductRepo(dbCon)
 	productHandler := product.NewHandler(middlewares, productRepo)
 
-	userRepo := repo.NewUserRepo(db)
+	userRepo := repo.NewUserRepo(dbCon)
 	userHandler := user.NewHandler(cnf, userRepo)
 
 	server := rest.NewServer(cnf, productHandler, userHandler)
